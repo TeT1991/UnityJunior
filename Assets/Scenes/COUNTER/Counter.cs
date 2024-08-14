@@ -1,52 +1,72 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class Counter : MonoBehaviour
 {
-    public UnityEvent<int> OnChanged;
+    [SerializeField] private Button _button;
 
     private bool _isStarted;
-    private float _timeBetweenTick;
+    private float _delay;
     private int _value;
+
+    private IEnumerator _coroutine;
+
+    public UnityEvent<int> OnChanged;
 
     public void ChangeStatus()
     {
-        if (_isStarted == false)
+        _isStarted = !_isStarted;
+
+        switch (_isStarted)
         {
-            _isStarted = true;
-            StartCoroutine(IncreaseValue(_timeBetweenTick));
-        }
-        else
-        {
-            _isStarted = false;
-            StopCoroutine(IncreaseValue(_timeBetweenTick));
+            case true:
+                StartCoroutine(_coroutine);
+                break;
+
+            case false:
+                StopCoroutine(_coroutine);
+                break;
         }
     }
 
     private void Start()
     {
-        _isStarted = true;
-        _timeBetweenTick = 0.5f;
-        _value = 0;
+        Init();
 
-        StartCoroutine(IncreaseValue(_timeBetweenTick));
+        _button.onClick.AddListener(ChangeStatus);
     }
 
-    private void ChangeValue()
+    private IEnumerator ChangeValue(float delay)
     {
-        _value++;
-        OnChanged?.Invoke(_value);
-    }
+        var wait = new WaitForSeconds(delay);
 
-    private IEnumerator IncreaseValue(float time)
-    {
-        var wait = new WaitForSeconds(time);
-
-        while (_isStarted)
+        while (enabled)
         {
-            ChangeValue();
+            IncreaseValue();
             yield return wait;
         }
+    }
+
+    private void IncreaseValue()
+    {
+        _value++;
+
+        OnChanged.Invoke(_value);
+    }
+
+    private void Init()
+    {
+        _isStarted = false;
+        _delay = 0.5f;
+        _value = 0;
+
+        _coroutine = ChangeValue(_delay);
+    }
+
+    private void OnMouseDown()
+    {
+        ChangeStatus();
     }
 }
