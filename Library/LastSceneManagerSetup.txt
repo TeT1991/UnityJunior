@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/COUNTER/Counter.unity
+- path: Assets/HOMEWORKS/Counter/Counter.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
