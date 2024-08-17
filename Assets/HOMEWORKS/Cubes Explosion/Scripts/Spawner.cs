@@ -69,7 +69,8 @@ public class Spawner : MonoBehaviour
 
     private Vector2 CalculateScale(int count)
     {
-        int divider = count * 2;
+        int multiplyer = 2;
+        int divider = count * multiplyer;
 
         if (divider > 0)
         {
@@ -87,8 +88,9 @@ public class Spawner : MonoBehaviour
 
     private Color CalculateColor()
     {
+        float alpha = 1f;
         Color color = Random.ColorHSV();
-        color.a = 1f;
+        color.a = alpha;
 
         return color;
     }

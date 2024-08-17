@@ -3,7 +3,7 @@ using UnityEngine;
 [RequireComponent(typeof(ClickHandler))]
 public class Destroyer : MonoBehaviour
 {
-    private ClickHandler clickHandler;
+    private ClickHandler _clickHandler;
 
     private void Start()
     {
@@ -12,8 +12,8 @@ public class Destroyer : MonoBehaviour
 
     private void Init()
     {
-        clickHandler = GetComponent<ClickHandler>();
-        clickHandler.Clicked.AddListener(DestroyCube);
+        _clickHandler = GetComponent<ClickHandler>();
+        _clickHandler.Clicked.AddListener(DestroyCube);
     }
 
     private void DestroyCube()
