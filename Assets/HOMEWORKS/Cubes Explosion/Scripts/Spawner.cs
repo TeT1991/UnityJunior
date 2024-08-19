@@ -1,9 +1,14 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
+[RequireComponent(typeof(Divider))]
 public class Spawner : MonoBehaviour
 {
+    private Divider _divider;
+
     private int _spawnCountMin;
     private int _spawnCountMax;
 
@@ -11,47 +16,53 @@ public class Spawner : MonoBehaviour
 
     [SerializeField] private Cube _prefabToSpawn;
 
-    private float _chanceToSpawn;
+    private void OnEnable()
+    {
+        Init();
+        _divider.Divided.AddListener(CreateCubes);
+    }
+
+    private void OnDestroy()
+    {
+        _divider.Divided.RemoveListener(CreateCubes);
+    }
 
     private void Start()
     {
-        Init();
-
-        TryCreateCubes();
+        CreateCubes();
     }
 
     private void Init()
     {
         _spawnCountMin = 2;
         _spawnCountMax = 6;
-        _chanceToSpawn = 100;
+
+        while (_divider == null)
+        {
+            _divider = GetComponent<Divider>();
+        }
 
         ResetScale();
     }
 
-    private void TryCreateCubes()
+    private void CreateCubes()
     {
-        if (TryGetChance())
+        int spawnCount = Random.Range(_spawnCountMin, _spawnCountMax);
+
+        int count = 0;
+
+        for (int i = 0; i < spawnCount; i++)
         {
-            int spawnCount = Random.Range(_spawnCountMin, _spawnCountMax);
+            var spawnedCube = Instantiate(_prefabToSpawn);
 
-            int count = 0;
+            SpriteRenderer spriteRenderer = spawnedCube.GetComponentInChildren<SpriteRenderer>();
+            Cube cube = spawnedCube.GetComponentInChildren<Cube>();
 
-            for (int i = 0; i < spawnCount; i++)
-            {
-                var spawnedCube = Instantiate(_prefabToSpawn);
+            spawnedCube.transform.position = CalculateSpawnPoint();
+            spawnedCube.transform.localScale = CalculateScale(count);
+            spriteRenderer.color = CalculateColor();
 
-                SpriteRenderer spriteRenderer = spawnedCube.GetComponentInChildren<SpriteRenderer>();
-                ClickHandler clickHandler = spawnedCube.GetComponentInChildren<ClickHandler>();
-
-                spawnedCube.transform.position = CalculateSpawnPoint();
-                spawnedCube.transform.localScale = CalculateScale(count);
-                spriteRenderer.color = CalculateColor();
-                
-                clickHandler.Clicked.AddListener(TryCreateCubes);
-
-                count++;
-            }
+            count++;
         }
 
         ResetScale();
@@ -93,29 +104,5 @@ public class Spawner : MonoBehaviour
         color.a = alpha;
 
         return color;
-    }
-
-    private void CalculateNewChancePercent()
-    {
-        int divider = 2;
-        _chanceToSpawn /= divider;
-    }
-
-    private bool TryGetChance()
-    {
-        int maxPercent = 100;
-        int minPercent = 0;
-        float percent = Random.Range(minPercent, maxPercent);
-
-        if (percent <= _chanceToSpawn)
-        {
-            CalculateNewChancePercent();
-
-            return true;
-        }
-
-        CalculateNewChancePercent();
-
-        return false;
     }
 }
