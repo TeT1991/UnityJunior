@@ -10,10 +10,6 @@ public class Explosion : MonoBehaviour
 
     private Divider _divider;
 
-
-    private Vector2 _tempPosition;
-    float _tempRadius;
-
     private void Start()
     {
         Init();
