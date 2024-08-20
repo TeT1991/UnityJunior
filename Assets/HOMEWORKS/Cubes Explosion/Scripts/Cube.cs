@@ -1,45 +1,31 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
-[RequireComponent(typeof(Explosion))]
+[RequireComponent(typeof(Rigidbody2D))]
 public class Cube : MonoBehaviour
 {
-    private Divider _divider;
-    private Explosion _explosion;
+    //private Rigidbody2D _rigidBody;
 
-    public UnityEvent Clicked;
+    public event Action<Cube> Clicked;
 
-    private void Start()
-    {
-        Init(); 
-    }
+    //public Rigidbody2D GetRigidBody()
+    //{
+    //    return _rigidBody;
+    //}
 
     private void OnMouseUpAsButton()
     {
-        Clicked?.Invoke();
+        Clicked?.Invoke(this);
         Destroy(gameObject);
     }
 
-    private void OnDestroy()
-    {
-        Clicked.RemoveAllListeners();
-    }
-
-    private void Init()
-    {
-        while (_divider == null)
-        {
-            _divider = FindAnyObjectByType<Divider>();
-        }
-
-        while(_explosion == null)
-        {
-            _explosion = GetComponent<Explosion>();
-        }
-
-        Clicked.AddListener(_divider.TryDivide);
-        _divider.NotDivided.AddListener(_explosion.Explode);
-    }
+    //private void Init()
+    //{
+    //    while(_rigidBody == null)
+    //    {
+    //        _rigidBody = GetComponent<Rigidbody2D>();
+    //    }
+    //}
 }

@@ -1,47 +1,57 @@
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
 
 public class Divider : MonoBehaviour
 {
-    private float _maxChanceToDivide;
+    private float _chanceToDivide;
 
-    public UnityEvent Divided;
-    public UnityEvent NotDivided;
+    public event Action<bool, Cube> Divided;
 
     private void Start()
     {
         Init();
     }
 
-    public void TryDivide()
+    public void TryToDivide(Cube cube)
     {
-        int maxPercent = 100;
-        int minPercent = 0;
-        float percent = Random.Range(minPercent, maxPercent);
-        Debug.Log(percent + "   " + _maxChanceToDivide);
+        bool isDivided;
 
-        if (percent <= _maxChanceToDivide)
+        if (TryGetChance())
         {
-            Divided?.Invoke();
+            isDivided = true;
         }
         else
         {
-            NotDivided?.Invoke();
+            isDivided = false;
         }
 
-        CalculateNewChancePercent();
+        Debug.Log(isDivided);
+
+        DecreaseChancheToDivide();
+
+        Divided?.Invoke(isDivided, cube);
     }
 
-    private void CalculateNewChancePercent()
+    private bool TryGetChance()
     {
-        int divider = 2;
-        _maxChanceToDivide /= divider;
+        float minPercent = 0;
+        float maxPercent = 100;
+        float chance = UnityEngine.Random.Range(minPercent, maxPercent);
+
+        return chance <= _chanceToDivide;
+    }
+
+    private void DecreaseChancheToDivide()
+    {
+        float divider = 2;
+        _chanceToDivide /= divider;
     }
 
     private void Init()
     {
-        _maxChanceToDivide = 100;
+        _chanceToDivide = 100;
     }
 }

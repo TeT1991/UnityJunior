@@ -1,93 +1,71 @@
-using Unity.VisualScripting;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
 public class Explosion : MonoBehaviour
 {
-    private Rigidbody2D _rigidbody;
-    private Spawner _spawner;
+    [SerializeField] private float _standartRadius;
+    [SerializeField] private float _standartForce;
 
-    [SerializeField] private float _maxPower;
-    [SerializeField] private float _maxRadius;
+    private Divider _divider;
+
+
+    private Vector2 _tempPosition;
+    float _tempRadius;
 
     private void Start()
     {
         Init();
     }
 
-    public void Explode()
+    private void TryExplode(bool isDivided, Cube cube)
     {
-        Debug.Log("Explode");
-        float radius = CalculateExplosionRadius();
-
-        Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, radius);
-
-        foreach (Collider2D collider in colliders)
+        if (isDivided == false)
         {
-            Rigidbody2D rigidbody2D = collider.GetComponent<Rigidbody2D>();
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(cube.transform.position, CalculateRadius(cube));
 
-            Vector2 direction = collider.transform.position - transform.position;
-            Vector2 force = direction * CalculateExplosionPower(radius, collider.transform.position);
+            foreach (Collider2D collider in colliders)
+            {
+                Vector2 direction = collider.transform.position - cube.transform.position;
 
-            rigidbody2D.AddForce(direction * CalculateExplosionPower(radius, collider.transform.position), ForceMode2D.Impulse);
-
-            Debug.Log($"{collider.name} --- {force}");
+                if (collider.TryGetComponent<Rigidbody2D>(out Rigidbody2D rigidbody2D))
+                {
+                    rigidbody2D.AddForce(direction * CalculateForce(cube, collider.transform.position), ForceMode2D.Impulse);
+                }
+                else
+                {
+                    return;
+                }
+            }
         }
     }
 
-    private float CalculatePercent(float value, float maxValue)
+    private float CalculateRadius(Cube cube)
     {
-        int minValue = 0;
+        float minValue = 0;
+        float radiusModifier = Mathf.InverseLerp(_standartRadius, minValue, cube.transform.localScale.x);
 
-        return Mathf.InverseLerp(minValue, maxValue, value);
+        return _standartRadius + (_standartRadius - (_standartRadius * radiusModifier));  
     }
 
-    private float CalculateExplosionRadius()
+    private float CalculateForce(Cube cube, Vector2 target)
     {
-        float minRadius = 1;
-        float modifier = 2f;
+        float minValue = 0;
+        float distance = Vector2.Distance(cube.transform.position, target);
 
-        float radius;
+        float forceModifierByDistance = Mathf.InverseLerp(CalculateRadius(cube), minValue, distance);
 
-        if (_maxRadius < transform.localScale.x)
-        {
-            radius = minRadius;
-
-            return radius;
-        }
-
-        float tempRadius = transform.localScale.x * modifier;
-
-        radius = _maxRadius - (tempRadius * CalculatePercent(tempRadius, _maxRadius));
-
-        if (radius > _maxRadius)
-        {
-            radius = _maxRadius;
-        }
-
-        return radius;
-    }
-
-    private float CalculateExplosionPower(float radius, Vector2 targetPosition)
-    {
-        float distance = Vector2.Distance(transform.position, targetPosition);
-
-        float power = _maxPower + (_maxPower * CalculatePercent(radius, distance));
-
-        return power;
+        return _standartForce + (_standartForce * forceModifierByDistance);
     }
 
     private void Init()
     {
-        _rigidbody = GetComponent<Rigidbody2D>();
-    }
+        while (_divider == null)
+        {
+            _divider = GetComponent<Divider>();
+        }
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, _maxRadius);
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, CalculateExplosionRadius());
+        _divider.Divided += TryExplode;
     }
 }
