@@ -30,7 +30,7 @@ public class Explosion : MonoBehaviour
                 float modifierByDistance = CalculateModifier(minDistance, radius, distance);
                 float force = (_standartForce + CalculateForce()) * modifierByDistance ;
 
-                rigidbody.AddExplosionForce(_standartForce, transform.position, _standartRadius);
+                rigidbody.AddExplosionForce(force, transform.position, _standartRadius);
             }
         }
     }
