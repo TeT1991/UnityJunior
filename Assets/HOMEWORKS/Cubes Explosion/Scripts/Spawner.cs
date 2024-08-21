@@ -1,72 +1,68 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
-[RequireComponent(typeof(Divider))]
 public class Spawner : MonoBehaviour
 {
     [SerializeField] private Cube _prefabToSpawn;
-    private Divider _divider;
+    [SerializeField] private Cube[] _initializedCubes;
 
+    private float _chanceToSpawn;
     private float _scale;
+
+    public event Action Spawned;
 
     private void Start()
     {
         Init();
-
-        bool isFirstCreate = true;
-
-        TryCreateCubes(isFirstCreate, new Cube());
     }
 
-    private Vector2 CalculateSpawnPoint()
+    private void TryCreateCubes(Cube cube)
     {
-        float zeroPoint = 0;
+        cube.Clicked -= TryCreateCubes;
+        Spawned -= cube.Explode;
 
-        float xPoint = Random.Range(zeroPoint, Screen.width);
-        float yPoint = Random.Range(zeroPoint, Screen.height);
-
-        return Camera.main.ScreenToWorldPoint(new Vector2(xPoint, yPoint));
-    }
-
-    private void TryCreateCubes(bool isDivided, Cube cube)
-    {
-        if (isDivided)
+        if (cube.IsDivided)
         {
-            int minCount = 2;
-            int maxCount = 6;
+            float minCount = 2;
+            float maxCount = 6;
+            float count = UnityEngine.Random.Range(minCount, maxCount);
 
-            int countToSpawn = Random.Range(minCount, maxCount);
-
-            for (int i = 0; i < countToSpawn; i++)
+            for (int i = 0; i < count; i++)
             {
-                var spawnedCube = Instantiate(_prefabToSpawn);
-                spawnedCube.transform.position = CalculateSpawnPoint();
-                Vector2 scale = Vector2.one * _scale;
-                spawnedCube.transform.localScale = scale;
+                var spawnedCube = Instantiate(_prefabToSpawn, cube.transform.position, Quaternion.identity);
+                spawnedCube.Clicked += TryCreateCubes;
+                spawnedCube.SetChanceToDivide(_chanceToSpawn);
+                spawnedCube.transform.localScale = Vector3.one * _scale;
+                Spawned += spawnedCube.Explode;
 
-                spawnedCube.Clicked += _divider.TryToDivide;
-
-                CalculateScale(scale.x);
+                DecreaseValue(ref _chanceToSpawn);
+                DecreaseValue(ref _scale);
             }
+        }
+        else
+        {
+            Spawned?.Invoke();
         }
     }
 
-    private void CalculateScale(float scale)
+    private void DecreaseValue(ref float value)
     {
-        _scale = scale / 2;
+        float divider = 2;
+        value /= divider;  
     }
 
     private void Init()
     {
+        _chanceToSpawn = 100;
         _scale = 1;
 
-        while (_divider == null)
+        foreach (var cube in _initializedCubes)
         {
-            _divider = GetComponent<Divider>();
+            cube.SetChanceToDivide(_chanceToSpawn);
+            cube.Clicked += TryCreateCubes;
+            Spawned += cube.Explode;
         }
-
-        _divider.Divided += TryCreateCubes;
     }
 }

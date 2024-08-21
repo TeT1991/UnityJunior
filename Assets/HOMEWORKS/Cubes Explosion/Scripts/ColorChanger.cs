@@ -1,14 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-
+[RequireComponent(typeof(Renderer))]
 public class ColorChanger : MonoBehaviour
 {
-    [SerializeField] private SpriteRenderer _spriteRenderer;
+    private Material _material;
 
     private void Start()
     {
+        Init();
         ChangeColor();
     }
 
@@ -17,6 +16,11 @@ public class ColorChanger : MonoBehaviour
         Color color = Random.ColorHSV();
         color.a = 1;
 
-        _spriteRenderer.color = color;
+        _material.color = color;
+    }
+
+    private void Init()
+    {
+        _material = GetComponent<Renderer>().material;
     }
 }

@@ -1,67 +1,71 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Explosion : MonoBehaviour
 {
     [SerializeField] private float _standartRadius;
     [SerializeField] private float _standartForce;
 
-    private Divider _divider;
+    private Rigidbody _rigidBody;
 
     private void Start()
     {
         Init();
     }
 
-    private void TryExplode(bool isDivided, Cube cube)
+    public void Explode()
     {
-        if (isDivided == false)
+        float radius = CalculateRadius();
+
+        Collider[] colliders = Physics.OverlapSphere(transform.position, _standartRadius);
+
+        foreach (Collider collider in colliders)
         {
-            Collider2D[] colliders = Physics2D.OverlapCircleAll(cube.transform.position, CalculateRadius(cube));
-
-            foreach (Collider2D collider in colliders)
+            if (collider.TryGetComponent<Rigidbody>(out Rigidbody rigidbody))
             {
-                Vector2 direction = collider.transform.position - cube.transform.position;
+                float minDistance = 0;
+                float distance = Vector3.Distance(transform.position, rigidbody.position);
+                float modifierByDistance = CalculateModifier(minDistance, radius, distance);
+                float force = _standartForce + (_standartForce * modifierByDistance);
 
-                if (collider.TryGetComponent<Rigidbody2D>(out Rigidbody2D rigidbody2D))
-                {
-                    rigidbody2D.AddForce(direction * CalculateForce(cube, collider.transform.position), ForceMode2D.Impulse);
-                }
-                else
-                {
-                    return;
-                }
+                rigidbody.AddExplosionForce(_standartForce, transform.position, _standartRadius);
             }
         }
     }
 
-    private float CalculateRadius(Cube cube)
+    private float CalculateModifier(float minValue, float maxValue, float value)
     {
-        float minValue = 0;
-        float radiusModifier = Mathf.InverseLerp(_standartRadius, minValue, cube.transform.localScale.x);
-
-        return _standartRadius + (_standartRadius - (_standartRadius * radiusModifier));  
+        return Mathf.InverseLerp(maxValue, minValue, value);
     }
 
-    private float CalculateForce(Cube cube, Vector2 target)
+    private float CalculateRadius()
     {
-        float minValue = 0;
-        float distance = Vector2.Distance(cube.transform.position, target);
+        float minSize = 0;
+        float maxSize = 1;
+        float minModifier = 0.1f;
 
-        float forceModifierByDistance = Mathf.InverseLerp(CalculateRadius(cube), minValue, distance);
+        float modifierByScale = CalculateModifier(minSize, maxSize, transform.localScale.x);
+        
+        if(modifierByScale <= 0)
+        {
+            modifierByScale = minModifier;
+        }
 
-        return _standartForce + (_standartForce * forceModifierByDistance);
+        float radius = _standartRadius + (_standartRadius * modifierByScale);
+
+        return radius;
     }
 
     private void Init()
     {
-        while (_divider == null)
-        {
-            _divider = GetComponent<Divider>();
-        }
+        _rigidBody = GetComponent<Rigidbody>();
+    }
 
-        _divider.Divided += TryExplode;
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, CalculateRadius());
     }
 }
