@@ -28,7 +28,7 @@ public class Explosion : MonoBehaviour
                 float minDistance = 0;
                 float distance = Vector3.Distance(transform.position, rigidbody.position);
                 float modifierByDistance = CalculateModifier(minDistance, radius, distance);
-                float force = _standartForce + (_standartForce * modifierByDistance);
+                float force = (_standartForce + CalculateForce()) * modifierByDistance ;
 
                 rigidbody.AddExplosionForce(_standartForce, transform.position, _standartRadius);
             }
@@ -56,6 +56,24 @@ public class Explosion : MonoBehaviour
         float radius = _standartRadius + (_standartRadius * modifierByScale);
 
         return radius;
+    }
+
+    private float CalculateForce()
+    {
+        float minSize = 0;
+        float maxSize = 1;
+        float minModifier = 0.1f;
+
+        float modifierByScale = CalculateModifier(minSize, maxSize, transform.localScale.x);
+
+        if (modifierByScale <= 0)
+        {
+            modifierByScale = minModifier;
+        }
+
+        float force = _standartForce + (_standartForce * modifierByScale);
+
+        return force;
     }
 
     private void Init()
