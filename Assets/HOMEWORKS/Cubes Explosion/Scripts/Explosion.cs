@@ -12,12 +12,13 @@ public class Explosion : MonoBehaviour
 
     private void Start()
     {
-        Init();
+        _rigidBody = GetComponent<Rigidbody>();
     }
 
     public void Explode()
     {
-        float radius = CalculateRadius();
+        float modifierByScale = CalculateModifierByScale();
+        float radius = CalculateValueByModifier(_standartRadius, modifierByScale);
 
         Collider[] colliders = Physics.OverlapSphere(transform.position, _standartRadius);
 
@@ -28,7 +29,7 @@ public class Explosion : MonoBehaviour
                 float minDistance = 0;
                 float distance = Vector3.Distance(transform.position, rigidbody.position);
                 float modifierByDistance = CalculateModifier(minDistance, radius, distance);
-                float force = (_standartForce + CalculateForce()) * modifierByDistance ;
+                float force = CalculateValueByModifier(_standartForce, modifierByScale) * modifierByDistance;
 
                 rigidbody.AddExplosionForce(force, transform.position, _standartRadius);
             }
@@ -40,25 +41,12 @@ public class Explosion : MonoBehaviour
         return Mathf.InverseLerp(maxValue, minValue, value);
     }
 
-    private float CalculateRadius()
+    private float CalculateValueByModifier(float value, float modifier)
     {
-        float minSize = 0;
-        float maxSize = 1;
-        float minModifier = 0.1f;
-
-        float modifierByScale = CalculateModifier(minSize, maxSize, transform.localScale.x);
-        
-        if(modifierByScale <= 0)
-        {
-            modifierByScale = minModifier;
-        }
-
-        float radius = _standartRadius + (_standartRadius * modifierByScale);
-
-        return radius;
+        return value + (value * modifier);
     }
 
-    private float CalculateForce()
+    private float CalculateModifierByScale()
     {
         float minSize = 0;
         float maxSize = 1;
@@ -71,19 +59,6 @@ public class Explosion : MonoBehaviour
             modifierByScale = minModifier;
         }
 
-        float force = _standartForce + (_standartForce * modifierByScale);
-
-        return force;
-    }
-
-    private void Init()
-    {
-        _rigidBody = GetComponent<Rigidbody>();
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, CalculateRadius());
+        return modifierByScale;
     }
 }

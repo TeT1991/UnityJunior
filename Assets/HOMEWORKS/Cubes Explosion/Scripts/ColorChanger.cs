@@ -7,7 +7,7 @@ public class ColorChanger : MonoBehaviour
 
     private void Start()
     {
-        Init();
+        _material = GetComponent<Renderer>().material;
         ChangeColor();
     }
 
@@ -17,10 +17,5 @@ public class ColorChanger : MonoBehaviour
         color.a = 1;
 
         _material.color = color;
-    }
-
-    private void Init()
-    {
-        _material = GetComponent<Renderer>().material;
     }
 }

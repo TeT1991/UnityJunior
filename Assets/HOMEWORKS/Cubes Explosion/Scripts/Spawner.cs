@@ -15,7 +15,10 @@ public class Spawner : MonoBehaviour
 
     private void Start()
     {
-        Init();
+        _chanceToSpawn = 100;
+        _scale = 1;
+
+        PrepareInitializedCubes();
     }
 
     private void TryCreateCubes(Cube cube)
@@ -36,10 +39,10 @@ public class Spawner : MonoBehaviour
                 spawnedCube.SetChanceToDivide(_chanceToSpawn);
                 spawnedCube.transform.localScale = Vector3.one * _scale;
                 Spawned += spawnedCube.Explode;
-
-                DecreaseValue(ref _chanceToSpawn);
-                DecreaseValue(ref _scale);
             }
+
+            DecreaseValue(ref _chanceToSpawn);
+            DecreaseValue(ref _scale);
         }
         else
         {
@@ -50,14 +53,11 @@ public class Spawner : MonoBehaviour
     private void DecreaseValue(ref float value)
     {
         float divider = 2;
-        value /= divider;  
+        value /= divider;
     }
 
-    private void Init()
+    private void PrepareInitializedCubes()
     {
-        _chanceToSpawn = 100;
-        _scale = 1;
-
         foreach (var cube in _initializedCubes)
         {
             cube.SetChanceToDivide(_chanceToSpawn);

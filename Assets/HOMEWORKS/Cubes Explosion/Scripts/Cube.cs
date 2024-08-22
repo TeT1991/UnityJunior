@@ -9,16 +9,17 @@ public class Cube : MonoBehaviour
     private float _chanceToDivide;
     private bool _isDivided;
 
+    public event Action<Cube> Clicked;
+
     public float ChanceToDivide => _chanceToDivide;
+
     public bool IsDivided => _isDivided;
 
     public Explosion ExplosionComponent => _explosion;
 
-    public event Action<Cube> Clicked;
-
     private void Start()
     {
-        Init();
+        _explosion = GetComponent<Explosion>();
     }
 
     private void OnMouseUpAsButton()
@@ -27,7 +28,7 @@ public class Cube : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void TryToDivide()
+    public void HasDivided()
     {
         float minPercent = 0;
         float maxPercent = 100;
@@ -46,16 +47,11 @@ public class Cube : MonoBehaviour
             _chanceToDivide = value;
         }
 
-        TryToDivide();
+        HasDivided();
     }
 
     public void Explode()
     {
         _explosion.Explode();
-    }
-
-    private void Init()
-    {
-        _explosion = GetComponent<Explosion>();
     }
 }
