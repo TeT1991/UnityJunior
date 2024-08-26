@@ -1,19 +1,25 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace CubesRain
 {
+    [RequireComponent(typeof(ObjectsCreator))]
     public class CustomPool : MonoBehaviour
     {
         [SerializeField] private MainPlatform _paltform;
 
-        [SerializeField] private Cube _prefab;
         [SerializeField] private int _capacity;
         [SerializeField] private int _timeToFirstLauch;
         [SerializeField] private int _delay;
 
+        private ObjectsCreator _objectsCreator;
+
         private Queue<Cube> _pool = new Queue<Cube>();
+
+        private void Awake()
+        {
+            _objectsCreator = GetComponent<ObjectsCreator>();
+        }
 
         private void Start()
         {
@@ -30,31 +36,23 @@ namespace CubesRain
             _pool.Enqueue(obj);
         }
 
-        private void CreateObject()
-        {
-            Cube obj = Instantiate(_prefab);
-            obj.transform.position = CalculateNewPosition();
-            obj.Released += ReleaseObject;
-            AddObjectToPool(obj);
-        }
-
         private void LaunchPool()
         {
-            if(_pool.Count < _capacity)
+            if (_pool.Count > 0)
             {
-                CreateObject();
+                GetObject();
             }
             else
             {
-                GetObject();
+               TryCreateObject();
             }
         }
 
         private void GetObject()
         {
             Cube obj = _pool.Dequeue();
-
             obj.transform.position = CalculateNewPosition();
+            obj.Reset();
             obj.gameObject.SetActive(true);
         }
 
@@ -62,12 +60,12 @@ namespace CubesRain
         {
             obj.gameObject.SetActive(false);
 
-            TryReturnToPool(obj);
+            TryReturnObjectToPool(obj);
         }
 
-        private void TryReturnToPool(Cube obj)
+        private void TryReturnObjectToPool(Cube obj)
         {
-            if(_pool.Count < _capacity)
+            if (_pool.Count < _capacity)
             {
                 _pool.Enqueue(obj);
             }
@@ -77,9 +75,14 @@ namespace CubesRain
             }
         }
 
+        private void TryCreateObject()
+        {
+                Cube obj = _objectsCreator.CreateObject(CalculateNewPosition());
+                obj.Released += ReleaseObject;
+        }
+
         private void DestroyObject(Cube obj)
         {
-            Debug.Log("DESTORY");
             obj.Released -= ReleaseObject;
             Destroy(obj.gameObject);
         }

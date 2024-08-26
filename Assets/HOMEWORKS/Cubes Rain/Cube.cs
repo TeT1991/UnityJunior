@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using UnityEngine;
 
 namespace CubesRain
@@ -9,8 +8,6 @@ namespace CubesRain
     {
         private ColorChanger _colorChanger;
         private bool _isFirstTimeCollide;
-
-        private Coroutine _coroutine;
 
         public event Action<Cube> Released;
 
@@ -24,12 +21,6 @@ namespace CubesRain
             Reset();
         }
 
-        public void Reset()
-        {
-            _isFirstTimeCollide = false;
-            _colorChanger.ResetColor();
-        }
-
         private void OnCollisionEnter(Collision collision)
         {
             if (_isFirstTimeCollide == false && collision.gameObject.TryGetComponent<MainPlatform>(out MainPlatform platform))
@@ -39,6 +30,12 @@ namespace CubesRain
 
                 Invoke(nameof(Release), GetRandomLifetime());
             }
+        }
+
+        public void Reset()
+        {
+            _isFirstTimeCollide = false;
+            _colorChanger.ResetColor();
         }
 
         private void Release()
