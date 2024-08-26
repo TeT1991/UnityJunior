@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace CubesRain
 {
-    [RequireComponent (typeof(GameObject))]
+    [RequireComponent (typeof(Cube))]
     public class ColorChanger : MonoBehaviour
     {
         private Material _material;
@@ -16,12 +16,7 @@ namespace CubesRain
             _material = GetComponent<Renderer>().material; 
         }
 
-        private void Start()
-        {
-            _cube.CollidedFirstTime += ChangeColor;
-        }
-
-        public void ChangeColor(Cube cube)
+        public void ChangeColor()
         {
             Color color = Random.ColorHSV();
             color.a = 1;

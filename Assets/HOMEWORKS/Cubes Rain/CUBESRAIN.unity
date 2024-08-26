@@ -257,11 +257,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 932797844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 938163d1b466d4d40a4ed1c2f394bdfa, type: 3}
+  m_Script: {fileID: 11500000, guid: db066e90119144f4ba65212054f89d74, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _paltform: {fileID: 1813746470}
   _prefab: {fileID: 5684103114735116692, guid: 1b7b9629931450b409c0e80b7389df79, type: 3}
-  _platform: {fileID: 1813746470}
+  _capacity: 3
+  _timeToFirstLauch: 2
+  _delay: 3
 --- !u!1 &1108841749
 GameObject:
   m_ObjectHideFlags: 0
