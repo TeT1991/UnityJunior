@@ -26,11 +26,6 @@ namespace CubesRain
             InvokeRepeating(nameof(LaunchPool), _timeToFirstLauch, _delay);
         }
 
-        private void Update()
-        {
-            Debug.Log(_pool.Count);
-        }
-
         private void AddObjectToPool(Cube obj)
         {
             _pool.Enqueue(obj);
@@ -38,14 +33,16 @@ namespace CubesRain
 
         private void LaunchPool()
         {
-            if (_pool.Count > 0)
+            if(_pool.Count == 0)
             {
-                GetObject();
+                CreateObject();
             }
             else
             {
-               TryCreateObject();
+                GetObject();
             }
+
+            Debug.Log(_pool.Count);
         }
 
         private void GetObject()
@@ -59,7 +56,6 @@ namespace CubesRain
         private void ReleaseObject(Cube obj)
         {
             obj.gameObject.SetActive(false);
-
             TryReturnObjectToPool(obj);
         }
 
@@ -67,7 +63,7 @@ namespace CubesRain
         {
             if (_pool.Count < _capacity)
             {
-                _pool.Enqueue(obj);
+                AddObjectToPool(obj);
             }
             else
             {
@@ -75,10 +71,12 @@ namespace CubesRain
             }
         }
 
-        private void TryCreateObject()
+        private void CreateObject()
         {
-                Cube obj = _objectsCreator.CreateObject(CalculateNewPosition());
-                obj.Released += ReleaseObject;
+            Cube obj = _objectsCreator.CreateObject(CalculateNewPosition());
+            obj.Released += ReleaseObject;
+            AddObjectToPool(obj);
+            GetObject();
         }
 
         private void DestroyObject(Cube obj)
