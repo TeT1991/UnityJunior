@@ -2,15 +2,13 @@ using UnityEngine;
 
 namespace CubesRain
 {
-    [RequireComponent (typeof(Cube))]
+    [RequireComponent (typeof(Renderer))]
     public class ColorChanger : MonoBehaviour
     {
         private Material _material;
-        private Cube _cube;
 
         private void Awake()
         {
-            _cube = GetComponent<Cube>();
             _material = GetComponent<Renderer>().material; 
         }
 

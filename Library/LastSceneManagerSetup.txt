@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/HOMEWORKS/Cubes Rain/CUBESRAIN.unity
+- path: Assets/HOMEWORKS/Cubes Rain/Scene/CUBESRAIN.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
