@@ -3,7 +3,11 @@ using UnityEngine;
 namespace GenerationEnemiesOnLevel
 {
     [RequireComponent(typeof(CubeEnemyPool))]
-    public class CubesEnemiesSpawner : MonoBehaviour
+    public class CubesEnemiesSpawner : Spawner
     {
+        protected override void Awake()
+        {
+            _enemies = GetComponent<CubeEnemyPool>();
+        }
     }
 }

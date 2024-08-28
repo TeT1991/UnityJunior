@@ -1,6 +1,6 @@
 namespace GenerationEnemiesOnLevel
 {
-    public class CubeEnemyPool : CustomPool<CubeEnemy>
+    public class CubeEnemyPool<T> : CustomPool<CubeEnemy>
     {
     }
 }

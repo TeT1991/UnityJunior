@@ -6,12 +6,12 @@ namespace GenerationEnemiesOnLevel
     [RequireComponent(typeof(CustomPool<Enemy>))]
     public class Spawner : MonoBehaviour
     {
-        private CustomPool<Enemy> _enemies;
+        protected CustomPool<Enemy> _enemies;
 
-        private Coroutine _coroutine;
+        protected Coroutine _coroutine;
         private float _spawnTime;
 
-        protected void Awake()
+        protected virtual void Awake()
         {
             _enemies = GetComponent<CustomPool<Enemy>>();
             _spawnTime = 2;
@@ -19,7 +19,6 @@ namespace GenerationEnemiesOnLevel
 
         protected void Start()
         {
-            Debug.Log("S");
             _coroutine = StartCoroutine(SpawnEnemy(_spawnTime));
         }
 
@@ -30,7 +29,10 @@ namespace GenerationEnemiesOnLevel
 
         protected void TrySpawnEnemies()
         {
+            Debug.Log("!!!!");
+
             Enemy enemy = _enemies.GetObject();
+            Debug.Log(enemy);
 
             if (enemy != null)
             {
@@ -61,13 +63,12 @@ namespace GenerationEnemiesOnLevel
             return new Vector3 (x, y, z);
         }
 
-        private IEnumerator SpawnEnemy(float delay)
+        protected IEnumerator SpawnEnemy(float delay)
         {
             var wait = new WaitForSeconds(delay);
 
             while (enabled)
             {
-                Debug.Log("!!!!");
 
                 TrySpawnEnemies();
 
