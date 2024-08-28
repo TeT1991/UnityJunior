@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,18 +8,94 @@ namespace GenerationEnemiesOnLevel
     public class Mover : MonoBehaviour
     {
         [SerializeField] private float _speed;
+        [SerializeField] private List<Vector3> _positions;
+        [SerializeField] private bool _isLoopedPath; 
 
-        public Vector3 _direction;
+        private int _nextPositionIndex;
+        private int _currentPositionIndex;
+
+        private void Awake()
+        {
+            Init();
+        }
 
         private void Update()
         {
-            transform.Translate(_direction * _speed);
+            Move();
+
+            SetPositionsIndexes();
+
+            TryStopMoving();
         }
 
-        public void SetDirection(Vector3 direction)
+        public void SetSpeed(float speed)
         {
-            _direction = direction;
+            if (speed > 0)
+            {
+                _speed = speed;
+            }
+        }
+
+        public void LoopPath()
+        {
+            _isLoopedPath = true;
+        }
+
+        public void AddTargetPositionBySpeed(Vector3 position)
+        {
+            _positions.Add(position * _speed);
+        }
+
+        private void Move()
+        {
+            transform.position = Vector3.MoveTowards(transform.position, _positions[_nextPositionIndex], _speed * Time.deltaTime);
+        }
+
+        private void SetPositionsIndexes()
+        {
+            int indexIncreaser = 1;
+
+            if (transform.position == _positions[_nextPositionIndex])
+            {
+
+                _currentPositionIndex = _nextPositionIndex;
+                _nextPositionIndex += indexIncreaser;
+
+                if (_nextPositionIndex >= _positions.Count)
+                {
+                    _nextPositionIndex = 0;
+                }
+            }
+        }
+
+        private void TryStopMoving()
+        {
+            if (_isLoopedPath == false && HasReachLastPoint() == true)
+            {
+                _speed = 0f;
+            }
+        }
+
+        private bool HasReachLastPoint()
+        {
+            if (transform.position == _positions[_positions.Count - 1])
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private void Init()
+        {
+            int startIndex = 0;
+            int indexIncreaser = 1;
+
+            _positions.Insert(startIndex, transform.position);
+            _currentPositionIndex = 0;
+            _nextPositionIndex = _currentPositionIndex + indexIncreaser;
         }
     }
 }
-

@@ -17,12 +17,10 @@ namespace GenerationEnemiesOnLevel
         {
             if (Count < Capacity)
             {
-                Debug.Log("ENQ");
                 _objects.Enqueue(obj);
             }
             else
             {
-                Debug.Log("DESTR");
                 Destroy(obj);
             }
         }
@@ -33,12 +31,10 @@ namespace GenerationEnemiesOnLevel
 
             if (_objects.Count == 0)
             {
-                Debug.Log("INST");
                 obj = Instantiate(_prefab);
             }
             else
             {
-                Debug.Log("QUE");
                 obj = _objects.Dequeue();
             }
 

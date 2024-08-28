@@ -6,44 +6,42 @@ namespace GenerationEnemiesOnLevel
     [RequireComponent(typeof(CustomPool<Enemy>))]
     public class Spawner : MonoBehaviour
     {
-        [SerializeField] private Enemy _prefab;
-        [SerializeField] private SpawnPoint[] _spawnPositions;
-
         private CustomPool<Enemy> _enemies;
 
         private Coroutine _coroutine;
         private float _spawnTime;
 
-        private void Awake()
+        protected void Awake()
         {
             _enemies = GetComponent<CustomPool<Enemy>>();
             _spawnTime = 2;
         }
 
-        private void Start()
+        protected void Start()
         {
+            Debug.Log("S");
             _coroutine = StartCoroutine(SpawnEnemy(_spawnTime));
         }
 
-        private void OnDisable()
+        protected void OnDisable()
         {
             StopCoroutine(_coroutine);
         }
 
-        private void TrySpawnEnemies()
+        protected void TrySpawnEnemies()
         {
             Enemy enemy = _enemies.GetObject();
 
             if (enemy != null)
             {
-                enemy.SetPosition(GetSpawnPosition());
-                enemy.SetDirection(CalculateDirection());
+                enemy.SetPosition(transform.position);
+                enemy.AddTargetPositionByLifetime(CalculateDirection());
                 enemy.gameObject.SetActive(true);
                 enemy.Died += ReleaseEnemy;
             }
         }
 
-        private void ReleaseEnemy(Enemy enemy)
+        protected void ReleaseEnemy(Enemy enemy)
         {
             enemy.gameObject.SetActive(false);
             enemy.Died -= ReleaseEnemy;
@@ -51,16 +49,7 @@ namespace GenerationEnemiesOnLevel
             _enemies.TryAddObjectToPool(enemy);
         }
 
-        private Vector3 GetSpawnPosition()
-        {
-            int minValue = 0;
-            int maxValue = _spawnPositions.Length;
-            int index = Random.Range(minValue, maxValue);
-
-            return _spawnPositions[index].transform.position;
-        }
-
-        private Vector3 CalculateDirection()
+        protected Vector3 CalculateDirection()
         {
             float minValue = -1;
             float maxValue = 1;
@@ -78,7 +67,10 @@ namespace GenerationEnemiesOnLevel
 
             while (enabled)
             {
+                Debug.Log("!!!!");
+
                 TrySpawnEnemies();
+
                 yield return wait;
             }
         }
