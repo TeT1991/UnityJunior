@@ -8,9 +8,16 @@ namespace GenerationEnemiesOnLevel
     {
         [SerializeField] private float _speed;
 
+        public Vector3 _direction;
+
         private void Update()
         {
-            transform.Translate(Vector3.forward * _speed);
+            transform.Translate(_direction * _speed);
+        }
+
+        public void SetDirection(Vector3 direction)
+        {
+            _direction = direction;
         }
     }
 }

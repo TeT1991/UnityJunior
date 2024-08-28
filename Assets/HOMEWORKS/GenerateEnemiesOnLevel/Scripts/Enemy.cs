@@ -5,13 +5,21 @@ using UnityEngine;
 
 namespace GenerationEnemiesOnLevel
 {
+    [RequireComponent(typeof(Mover))]
     public class Enemy : MonoBehaviour
     {
+        private Mover _mover;
+
         private float _lifetime;
 
         private Coroutine _coroutine;
 
         public event Action<Enemy> Died;
+
+        private void Awake()
+        {
+            _mover = GetComponent<Mover>();
+        }
 
         private void OnEnable()
         {
@@ -19,14 +27,24 @@ namespace GenerationEnemiesOnLevel
             _coroutine = StartCoroutine(LifetimeCountdown(_lifetime));
         }
 
+        private void OnDisable()
+        {
+            StopCoroutine(_coroutine);
+        }
+
         private void Start()
         {
             Debug.Log(_lifetime);
         }
 
-        public void SetPositionAndRotation(Vector3 position, Quaternion rotation)
+        public void SetDirection(Vector3 direction)
         {
-            gameObject.transform.SetPositionAndRotation(position, rotation);
+            _mover.SetDirection(direction);
+        }
+
+        public void SetPosition(Vector3 position)
+        {
+            gameObject.transform.position = position;
         }
 
         private void CalculateLifetime()

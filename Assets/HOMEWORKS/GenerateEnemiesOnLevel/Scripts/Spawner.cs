@@ -25,14 +25,19 @@ namespace GenerationEnemiesOnLevel
             _coroutine = StartCoroutine(SpawnEnemy(_spawnTime));
         }
 
+        private void OnDisable()
+        {
+            StopCoroutine(_coroutine);
+        }
+
         private void TrySpawnEnemies()
         {
             Enemy enemy = _enemies.GetObject();
 
             if (enemy != null)
             {
-                Debug.Log("enemy");
-                enemy.SetPositionAndRotation(GetSpawnPosition(), CalculateRotation());
+                enemy.SetPosition(GetSpawnPosition());
+                enemy.SetDirection(CalculateDirection());
                 enemy.gameObject.SetActive(true);
                 enemy.Died += ReleaseEnemy;
             }
@@ -55,26 +60,16 @@ namespace GenerationEnemiesOnLevel
             return _spawnPositions[index].transform.position;
         }
 
-        private Quaternion CalculateRotation()
+        private Vector3 CalculateDirection()
         {
-            float minValue = 0;
-            float maxValue = 360;
+            float minValue = -1;
+            float maxValue = 1;
 
-            float x = 0;
+            float x = Random.Range(minValue, maxValue);
             float y = Random.Range(minValue, maxValue);
-            float z = 0;
+            float z = Random.Range(minValue, maxValue);
 
-            Quaternion rotation = Quaternion.Euler(x, y, z);
-
-            return rotation;
-        }
-
-        private float CalculateLifeTime()
-        {
-            float minLifetime = 2;
-            float maxTime = 6;
-
-            return Random.Range(minLifetime, maxTime);
+            return new Vector3 (x, y, z);
         }
 
         private IEnumerator SpawnEnemy(float delay)
