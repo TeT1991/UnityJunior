@@ -313,8 +313,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 932797845}
-  - component: {fileID: 932797847}
   - component: {fileID: 932797846}
+  - component: {fileID: 932797847}
   m_Layer: 0
   m_Name: Spawner
   m_TagString: Untagged
@@ -368,10 +368,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 932797844}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fd24b800b4bbb6246830197cf737b330, type: 3}
+  m_Script: {fileID: 11500000, guid: 569de2e40089b7342b37c8521ef403de, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _capacity: 5
+  _capacity: 3
+  _prefab: {fileID: 2671591659528087575, guid: d9194e659f891c14596ac81983f4e465, type: 3}
 --- !u!1 &1108841749
 GameObject:
   m_ObjectHideFlags: 0

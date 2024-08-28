@@ -3,20 +3,20 @@ using UnityEngine;
 
 namespace GenerationEnemiesOnLevel
 {
-    [RequireComponent(typeof(CustomPool))]
+    [RequireComponent(typeof(CustomPool<Enemy>))]
     public class Spawner : MonoBehaviour
     {
         [SerializeField] private Enemy _prefab;
         [SerializeField] private SpawnPoint[] _spawnPositions;
 
-        private CustomPool _pool;
+        private CustomPool<Enemy> _enemies;
 
         private Coroutine _coroutine;
         private float _spawnTime;
 
         private void Awake()
         {
-            _pool = GetComponent<CustomPool>();
+            _enemies = GetComponent<CustomPool<Enemy>>();
             _spawnTime = 2;
         }
 
@@ -25,23 +25,17 @@ namespace GenerationEnemiesOnLevel
             _coroutine = StartCoroutine(SpawnEnemy(_spawnTime));
         }
 
-        private void SpawnEnemy()
+        private void TrySpawnEnemies()
         {
-            Enemy enemy;
+            Enemy enemy = _enemies.GetObject();
 
-            if(_pool.Count > 0)
+            if (enemy != null)
             {
-                enemy = _pool.GetObject();
+                Debug.Log("enemy");
+                enemy.SetPositionAndRotation(GetSpawnPosition(), CalculateRotation());
+                enemy.gameObject.SetActive(true);
+                enemy.Died += ReleaseEnemy;
             }
-            else
-            {
-                enemy = Instantiate(_prefab);
-            }
-
-            enemy.transform.SetPositionAndRotation(GetSpawnPosition(), CalculateRotation());
-            enemy.SetLifetime(CalculateLifeTime());
-            enemy.gameObject.SetActive(true);
-            enemy.Died += ReleaseEnemy;
         }
 
         private void ReleaseEnemy(Enemy enemy)
@@ -49,13 +43,7 @@ namespace GenerationEnemiesOnLevel
             enemy.gameObject.SetActive(false);
             enemy.Died -= ReleaseEnemy;
 
-            if(_pool.Count < _pool.Capacity)
-            {
-                _pool.AddObjectToPool(enemy);
-                return;
-            }
-
-            Destroy(enemy.gameObject);
+            _enemies.TryAddObjectToPool(enemy);
         }
 
         private Vector3 GetSpawnPosition()
@@ -95,7 +83,7 @@ namespace GenerationEnemiesOnLevel
 
             while (enabled)
             {
-                SpawnEnemy();
+                TrySpawnEnemies();
                 yield return wait;
             }
         }

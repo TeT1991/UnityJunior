@@ -3,25 +3,46 @@ using UnityEngine;
 
 namespace GenerationEnemiesOnLevel
 {
-    public class CustomPool : MonoBehaviour
+    public class CustomPool<T> : MonoBehaviour where T : MonoBehaviour
     {
         [SerializeField] private int _capacity;
+        [SerializeField] private T _prefab;
 
-        private readonly Queue<Enemy> _pool = new Queue<Enemy>();
+        private readonly Queue<T> _objects = new Queue<T>();
 
         public int Capacity => _capacity;
-        public int Count => _pool.Count;
+        public int Count => _objects.Count;
 
-        public void AddObjectToPool(Enemy enemy)
+        public void TryAddObjectToPool(T obj)
         {
-            _pool.Enqueue(enemy);
+            if (Count < Capacity)
+            {
+                Debug.Log("ENQ");
+                _objects.Enqueue(obj);
+            }
+            else
+            {
+                Debug.Log("DESTR");
+                Destroy(obj);
+            }
         }
 
-        public Enemy GetObject()
+        public T GetObject()
         {
-            Enemy enemy = _pool.Dequeue();
+            T obj;
 
-            return enemy;
+            if (_objects.Count == 0)
+            {
+                Debug.Log("INST");
+                obj = Instantiate(_prefab);
+            }
+            else
+            {
+                Debug.Log("QUE");
+                obj = _objects.Dequeue();
+            }
+
+            return obj;
         }
     }
 }

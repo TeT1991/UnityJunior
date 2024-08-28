@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace GenerationEnemiesOnLevel
@@ -7,30 +9,48 @@ namespace GenerationEnemiesOnLevel
     {
         private float _lifetime;
 
+        private Coroutine _coroutine;
+
         public event Action<Enemy> Died;
+
+        private void OnEnable()
+        {
+            CalculateLifetime();
+            _coroutine = StartCoroutine(LifetimeCountdown(_lifetime));
+        }
 
         private void Start()
         {
-            Invoke(nameof(Die), _lifetime);
+            Debug.Log(_lifetime);
         }
 
-        public void SetLifetime(float lifetime)
+        public void SetPositionAndRotation(Vector3 position, Quaternion rotation)
+        {
+            gameObject.transform.SetPositionAndRotation(position, rotation);
+        }
+
+        private void CalculateLifetime()
         {
             float minLifetime = 2;
+            float maxLifetime = 5;
 
-            if (lifetime > 0)
-            {
-                _lifetime = lifetime;
-            }
-            else
-            {
-                _lifetime = minLifetime;
-            }
+            _lifetime = UnityEngine.Random.Range(minLifetime, maxLifetime);
         }
 
         private void Die()
         {
             Died?.Invoke(this);
+        }
+
+        private IEnumerator LifetimeCountdown(float delay)
+        {
+            var wait = new WaitForSeconds(delay);
+
+            while (enabled)
+            {
+                Die();
+                yield return wait;
+            }
         }
     }
 }
