@@ -4,11 +4,11 @@ using UnityEngine;
 namespace GenerationEnemiesOnLevel
 {
     [RequireComponent(typeof(CustomPool<Enemy>))]
-    public class Spawner : MonoBehaviour
+    public class Spawner<T> : MonoBehaviour where T: Enemy
     {
         [SerializeField] private TargetMover _target;
 
-        protected CustomPool<Enemy> Enemies;
+        protected CustomPool<Enemy> Enemies; 
 
         protected float SpawnTime;
 
@@ -37,8 +37,7 @@ namespace GenerationEnemiesOnLevel
 
             if (enemy != null)
             {
-                enemy.SetPosition(transform.position);
-                enemy.SetTarget(_target);
+                enemy.SetParametrs(transform.position, _target);
                 enemy.gameObject.SetActive(true);
                 enemy.Died += ReleaseEnemy;
             }
@@ -58,7 +57,6 @@ namespace GenerationEnemiesOnLevel
 
             while (enabled)
             {
-                Debug.Log(SpawnTime);
                 TrySpawnEnemies();
 
                 yield return wait;

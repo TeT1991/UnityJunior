@@ -6,7 +6,9 @@ namespace GenerationEnemiesOnLevel
     {
         protected override void Init()
         {
-            MovementSpeed = 0.3f;
+            base.Init();
+
+            MovementSpeed = 2f;
             Color = Color.green;
         }
     }

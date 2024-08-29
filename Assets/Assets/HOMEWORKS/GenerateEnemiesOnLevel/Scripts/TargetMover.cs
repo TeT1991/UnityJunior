@@ -71,14 +71,8 @@ namespace GenerationEnemiesOnLevel
 
         private bool HasReachLastPoint()
         {
-            if (transform.position == _positions[_positions.Count - 1])
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return transform.position == _positions[_positions.Count - 1];
+
         }
 
         private void Init()

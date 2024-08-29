@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace GenerationEnemiesOnLevel
 {
@@ -12,7 +13,6 @@ namespace GenerationEnemiesOnLevel
 
         private EnemyMover _mover;
 
-        private float _lifetime;
 
         private Coroutine _coroutine;
 
@@ -21,42 +21,34 @@ namespace GenerationEnemiesOnLevel
         private void Awake()
         {
             _mover = GetComponent<EnemyMover>();
+            Init();
         }
 
         private void Start()
         {
-            Init();
-
             SetColor();
-
-            _mover.SetSpeed(MovementSpeed);
         }
 
-        private void OnEnable()
-        {
-            CalculateLifetime();
-            _coroutine = StartCoroutine(LifetimeCountdown(_lifetime));
-        }
 
         private void OnDisable()
         {
-            StopCoroutine(_coroutine);
+            if (_coroutine != null)
+            {
+                StopCoroutine(_coroutine);
+            }
         }
 
-        public void SetPosition(Vector3 position)
+        public void SetParametrs(Vector3 position, TargetMover target)
         {
             gameObject.transform.position = position;
-        }
-
-        public void SetTarget (TargetMover target)
-        {
-            _mover.SetTarget(target);
+            _mover.Init(MovementSpeed, target);
         }
 
         protected virtual void Init()
         {
             MovementSpeed = 1;
             Color = Color.white;
+            _mover.ReachedTarget += Die;
         }
 
         private void SetColor()
@@ -64,29 +56,9 @@ namespace GenerationEnemiesOnLevel
             GetComponent<Renderer>().material.color = Color;
         }
 
-        private void CalculateLifetime()
-        {
-            float minLifetime = 5;
-            float maxLifetime = 20;
-
-            _lifetime = UnityEngine.Random.Range(minLifetime, maxLifetime);
-        }
-
-        private void Die()
+        protected void Die()
         {
             Died?.Invoke(this);
-        }
-
-        private IEnumerator LifetimeCountdown(float delay)
-        {
-            var wait = new WaitForSeconds(delay);
-
-            while (enabled)
-            {
-                Die();
-
-                yield return wait;
-            }
         }
     }
 }
