@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/HOMEWORKS/GenerateEnemiesOnLevel/Scene/GenerationEnemiesOnLevel.unity
+- path: Assets/Assets/HOMEWORKS/GenerateEnemiesOnLevel/Scene/GenerationEnemiesOnLevel.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
