@@ -5,19 +5,20 @@ namespace CodeStyleGenius
 {
     public class BulletSpawner : MonoBehaviour
     {
-        [SerializeField] Bullet _prefab;
+        [SerializeField] private Bullet _prefab;
 
-        [SerializeField] public float _bulletSpeed;
+        [SerializeField] private float _bulletSpeed;
 
         [SerializeField] private Target _target;
 
         [SerializeField] private float _timeBetweenShoot;
 
-        private readonly ObjectsPool<Bullet> _bulletPool;
+        private ObjectsPool<Bullet> _bulletPool;
+        private Coroutine _coroutine;
 
         void Start()
         {
-            StartCoroutine(ShootCountdown(_timeBetweenShoot));
+            _coroutine = StartCoroutine(ShootCountdown(_timeBetweenShoot));
         }
 
         private Vector3 CalculateDirection()
@@ -32,7 +33,7 @@ namespace CodeStyleGenius
 
         private void ReleaseBullet(Bullet bullet)
         {
-            bullet.Destroyed -= ReleaseBullet;
+            bullet.Disabled -= ReleaseBullet;
             _bulletPool.ReturnObject(bullet);
         }
 
@@ -44,7 +45,7 @@ namespace CodeStyleGenius
             {
                 var bullet = _bulletPool.GetObject();
                 bullet.Init(CalculateDirection(), CalculateVelocity());
-                bullet.Destroyed += ReleaseBullet;
+                bullet.Disabled += ReleaseBullet;
 
                 yield return wait;
             }

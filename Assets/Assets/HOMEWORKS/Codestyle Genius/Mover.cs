@@ -6,7 +6,7 @@ namespace CodeStyleGenius
     {
         [SerializeField] private float _speed;
 
-        [SerializeField] Target[] _targets; 
+        [SerializeField] private Target[] _targets; 
 
         private int _currentPositionIndex;
         private int _nextPositionIndex;

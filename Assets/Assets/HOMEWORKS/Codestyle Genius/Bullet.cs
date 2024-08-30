@@ -8,11 +8,11 @@ namespace CodeStyleGenius
     {
         private BulletMover _bulletMover;
 
-        public event Action<Bullet> Destroyed;
+        public event Action<Bullet> Disabled;
 
-        private void OnDestroy()
+        private void OnDisable()
         {
-            Destroyed?.Invoke(this);
+            Disabled?.Invoke(this);
         }
 
         public void Init(Vector3 direction, Vector3 velocity)
