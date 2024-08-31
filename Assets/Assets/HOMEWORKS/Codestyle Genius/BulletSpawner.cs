@@ -1,51 +1,43 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-namespace CodeStyleGenius
+namespace CodestyleGenius
 {
+    [RequireComponent(typeof(Rigidbody))]
     public class BulletSpawner : MonoBehaviour
     {
-        [SerializeField] private Bullet _prefab;
+        [SerializeField] private float _velocity;
 
-        [SerializeField] private float _bulletSpeed;
+        [SerializeField] private GameObject _prefab;
+        [SerializeField] private Transform _target;
+        [SerializeField] private float _timeBetweenShot;
 
-        [SerializeField] private Target _target;
-
-        [SerializeField] private float _timeBetweenShoot;
-
-        private ObjectsPool<Bullet> _bulletPool;
         private Coroutine _coroutine;
 
         void Start()
         {
-            _coroutine = StartCoroutine(ShootCountdown(_timeBetweenShoot));
+            Initialize();
         }
 
-        private Vector3 CalculateDirection()
+        private void Initialize()
         {
-            return (_target.transform.position - transform.position).normalized;
+            _coroutine = StartCoroutine(ShotingCountdown(_timeBetweenShot));
         }
 
-        private Vector3 CalculateVelocity()
-        {
-            return CalculateDirection() * _bulletSpeed;
-        }
-
-        private void ReleaseBullet(Bullet bullet)
-        {
-            bullet.Disabled -= ReleaseBullet;
-            _bulletPool.ReturnObject(bullet);
-        }
-
-        IEnumerator ShootCountdown(float delay)
+        private IEnumerator ShotingCountdown(float delay)
         {
             var wait = new WaitForSeconds(delay);
 
             while (enabled)
             {
-                var bullet = _bulletPool.GetObject();
-                bullet.Init(CalculateDirection(), CalculateVelocity());
-                bullet.Disabled += ReleaseBullet;
+                var direction = (_target.position - transform.position).normalized;
+                var bullet = Instantiate(_prefab, transform.position + direction, Quaternion.identity);
+
+                Rigidbody _rigidBody = bullet.GetComponent<Rigidbody>();
+
+                _rigidBody.transform.up = direction;
+                _rigidBody.velocity = direction * _velocity;
 
                 yield return wait;
             }
