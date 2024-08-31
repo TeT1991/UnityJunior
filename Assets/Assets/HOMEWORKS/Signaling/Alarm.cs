@@ -94,7 +94,6 @@ namespace AlarmForRobber
 
             while (_isPlaying)
             {
-                Debug.Log("@@@");
                 TryChangeVolume();
 
                 yield return wait;
