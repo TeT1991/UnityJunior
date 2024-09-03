@@ -8,20 +8,20 @@ namespace CodestyleGenius
     {
         [SerializeField] private float _velocity;
 
-        [SerializeField] private GameObject _prefab;
+        [SerializeField] private Bullet _prefab;
         [SerializeField] private Transform _target;
         [SerializeField] private float _timeBetweenShot;
 
         private Coroutine _coroutine;
 
-        void Start()
-        {
-            Initialize();
-        }
-
-        private void Initialize()
+        private void Start()
         {
             _coroutine = StartCoroutine(ShotingCountdown(_timeBetweenShot));
+        }
+
+        private void OnDisable()
+        {
+            StopCoroutine(_coroutine);
         }
 
         private IEnumerator ShotingCountdown(float delay)
@@ -33,10 +33,10 @@ namespace CodestyleGenius
                 var direction = (_target.position - transform.position).normalized;
                 var bullet = Instantiate(_prefab, transform.position + direction, Quaternion.identity);
 
-                Rigidbody _rigidBody = bullet.GetComponent<Rigidbody>();
+                Rigidbody rigidbody = bullet.GetComponent<Rigidbody>();
 
-                _rigidBody.transform.up = direction;
-                _rigidBody.velocity = direction * _velocity;
+                rigidbody.transform.up = direction;
+                rigidbody.velocity = direction * _velocity;
 
                 yield return wait;
             }

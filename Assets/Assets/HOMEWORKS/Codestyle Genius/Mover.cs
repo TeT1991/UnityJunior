@@ -4,8 +4,9 @@ namespace CodestyleGenius
 {
     public class Mover : MonoBehaviour
     {
+        [SerializeField] private Transform _places;
+
         private float _speed;
-        private Transform _places;
         private Transform[] _targetPositions;
         private int _currentPosition;
 
@@ -20,7 +21,7 @@ namespace CodestyleGenius
 
             for (int i = 0; i < _places.childCount; i++)
             {
-                if (_places.GetChild(i).TryGetComponent(out Transform transform))
+                if (_places.GetChild(i))
                 {
                     _targetPositions[i] = transform;
                 }
@@ -37,7 +38,7 @@ namespace CodestyleGenius
         {
             if (transform.position == _targetPositions[_currentPosition].position)
             {
-                GetNextPosition();
+                SelectNextPosition();
             }
         }
 
@@ -48,14 +49,9 @@ namespace CodestyleGenius
             transform.position = Vector3.MoveTowards(transform.position, targetPosition.position, _speed * Time.deltaTime);
         }
 
-        private void GetNextPosition()
+        private void SelectNextPosition()
         {
-            _currentPosition++;
-
-            if (_currentPosition == _targetPositions.Length)
-            {
-                _currentPosition = 0;
-            }
+            _currentPosition = (_currentPosition ++) % _targetPositions.Length;
 
             transform.forward = _targetPositions[_currentPosition].transform.position - transform.position;
         }
