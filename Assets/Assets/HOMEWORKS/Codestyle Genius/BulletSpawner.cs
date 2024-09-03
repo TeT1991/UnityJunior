@@ -3,12 +3,11 @@ using UnityEngine;
 
 namespace CodestyleGenius
 {
-    [RequireComponent(typeof(Rigidbody))]
     public class BulletSpawner : MonoBehaviour
     {
         [SerializeField] private float _velocity;
 
-        [SerializeField] private Bullet _prefab;
+        [SerializeField] private BulletMover _prefab;
         [SerializeField] private Transform _target;
         [SerializeField] private float _timeBetweenShot;
 
@@ -30,13 +29,11 @@ namespace CodestyleGenius
 
             while (enabled)
             {
-                var direction = (_target.position - transform.position).normalized;
-                var bullet = Instantiate(_prefab, transform.position + direction, Quaternion.identity);
+                Vector3 direction = (_target.position - transform.position).normalized;
 
-                Rigidbody rigidbody = bullet.GetComponent<Rigidbody>();
-
-                rigidbody.transform.up = direction;
-                rigidbody.velocity = direction * _velocity;
+                BulletMover bullet = Instantiate(_prefab, transform.position + direction, Quaternion.identity);
+                bullet.SetDirection(direction);
+                bullet.SetVelocity(_velocity);
 
                 yield return wait;
             }

@@ -4,7 +4,7 @@ namespace CodestyleGenius
 {
     public class Mover : MonoBehaviour
     {
-        [SerializeField] private Transform _places;
+        [SerializeField] private Transform[] _places;
 
         private float _speed;
         private Transform[] _targetPositions;
@@ -17,14 +17,11 @@ namespace CodestyleGenius
 
         private void Initialize()
         {
-            _targetPositions = new Transform[_places.childCount];
+            _targetPositions = new Transform[_places.Length];
 
-            for (int i = 0; i < _places.childCount; i++)
+            for (int i = 0; i < _places.Length; i++)
             {
-                if (_places.GetChild(i))
-                {
-                    _targetPositions[i] = transform;
-                }
+                    _targetPositions[i] = _places[i].transform;
             }
         }
 
